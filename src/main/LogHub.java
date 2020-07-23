@@ -9,7 +9,7 @@ import java.io.IOException;
 public class LogHub {
     private static final String PATH_CRASH = "CrashReport";
     //todo - other logpaths
-    private static final String TXT = ".txt";
+    public static final String TXT = "txt";
 
     /**
      * Log an exception as a fatal crash, generate a timestamped report, and terminate the program.
@@ -17,9 +17,8 @@ public class LogHub {
      * @param exception the exception which caused the call
      */
     public static void logFatalCrash(String adminMessage, Exception exception) {
-        String timestampedPath = PATH_CRASH + System.currentTimeMillis() + TXT;
         try {
-            FileWriter fileWriter = new FileWriter(timestampedPath);
+            FileWriter fileWriter = new FileWriter(getTimeStampedPath(PATH_CRASH, TXT));
             fileWriter.write(
                     "[Fatal Crash Report]"
                             + "\nCrash message: " + adminMessage
@@ -40,6 +39,10 @@ public class LogHub {
             stringBuilder.append("\n").append(ste);
         }
         return stringBuilder.toString();
+    }
+
+    public static String getTimeStampedPath(String preface, String extension) {
+        return preface + "_" + System.currentTimeMillis() + "." + extension;
     }
     //todo - other logging functions
 }
