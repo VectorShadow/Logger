@@ -2,13 +2,16 @@ package main;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * LogHub provides a utility for recording runtime data and writing to external log files.
  */
 public class LogHub {
-    private static final String PATH_CRASH = "CrashReport";
-    //todo - other logpaths
+    static final String PATH_CRASH = "CrashReport";
+    static final String PATH_LIVE_LOG = "LiveLog";
+    //todo - other logpaths?
     public static final String TXT = "txt";
 
     /**
@@ -17,15 +20,19 @@ public class LogHub {
      * @param exception the exception which caused the call
      */
     public static void logFatalCrash(String adminMessage, Exception exception) {
+        String crashDump =
+                "[Fatal Crash Report]"
+                + "\nCrash message: " + adminMessage
+                + "\nException message: " + exception.getMessage()
+                + "\nStack trace: " + stringifyStackTrace(exception);
         try {
-            FileWriter fileWriter = new FileWriter(getTimeStampedPath(PATH_CRASH, TXT));
-            fileWriter.write(
-                    "[Fatal Crash Report]"
-                            + "\nCrash message: " + adminMessage
-                            + "\nException message: " + exception.getMessage()
-                            + "\nStack trace: " + stringifyStackTrace(exception)
-            );
-            fileWriter.close();
+            if (LiveLog.isActive()) {
+                LiveLog.log(crashDump, LiveLog.LogEntryPriority.FATAL_ERROR);
+            } else {
+                FileWriter fileWriter = new FileWriter(getTimeStampedPath(PATH_CRASH, TXT));
+                fileWriter.write(crashDump);
+                fileWriter.close();
+            }
         } catch (IOException ioe) {
             System.exit(-2);
         }
@@ -43,6 +50,10 @@ public class LogHub {
 
     public static String getTimeStampedPath(String preface, String extension) {
         return preface + "_" + System.currentTimeMillis() + "." + extension;
+    }
+
+    public static String formatTime() {
+        return new SimpleDateFormat("HH:mm:ss.SSS").format(new Date(System.currentTimeMillis()));
     }
     //todo - other logging functions
 }
