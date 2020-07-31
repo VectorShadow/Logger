@@ -29,16 +29,16 @@ public class LogHub {
                 + "\nCrash message: " + adminMessage
                 + "\nException message: " + exception.getMessage()
                 + "\nStack trace: " + stringifyStackTrace(exception);
-        try {
-            if (LiveLog.isActive()) {
-                LiveLog.log(crashDump, LiveLog.LogEntryPriority.FATAL_ERROR);
-            } else {
+        if (LiveLog.isActive()) {
+            LiveLog.log(crashDump, LiveLog.LogEntryPriority.FATAL_ERROR);
+        } else {
+            try {
                 FileWriter fileWriter = new FileWriter(getTimeStampedPath(PATH_CRASH, TXT));
                 fileWriter.write(crashDump);
                 fileWriter.close();
+            } catch (IOException ioe) {
+                System.exit(-2);
             }
-        } catch (IOException ioe) {
-            System.exit(-2);
         }
         System.exit(-1);
     }
