@@ -2,6 +2,9 @@ package main;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -9,6 +12,7 @@ import java.util.Date;
  * LogHub provides a utility for recording runtime data and writing to external log files.
  */
 public class LogHub {
+    static final String LOG_DIRECTORY = "./logs";
     static final String PATH_CRASH = "CrashReport";
     static final String PATH_LIVE_LOG = "LiveLog";
     //todo - other logpaths?
@@ -49,7 +53,14 @@ public class LogHub {
     }
 
     public static String getTimeStampedPath(String preface, String extension) {
-        return preface + "_" + System.currentTimeMillis() + "." + extension;
+        if (!Files.exists(Paths.get(LOG_DIRECTORY))) {
+            try {
+                Files.createDirectory(Paths.get(LOG_DIRECTORY));
+            } catch (IOException e) {
+                //nothing to do here - if this happens we have no log directory to write to!
+            }
+        }
+        return LOG_DIRECTORY + "/" + preface + "_" + System.currentTimeMillis() + "." + extension;
     }
 
     public static String formatTime() {
