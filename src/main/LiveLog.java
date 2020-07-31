@@ -31,7 +31,6 @@ public class LiveLog {
     private LiveLog()  {
         try {
             FILE_WRITER = new FileWriter(getTimeStampedPath(PATH_LIVE_LOG, TXT));
-            FILE_WRITER.write("test");
             Runtime.getRuntime().addShutdownHook(
                     new Thread(
                             () -> {
@@ -50,7 +49,7 @@ public class LiveLog {
     }
 
     public static void log(String message, LogEntryPriority logEntryPriority) {
-        String logEntry = logEntryPriority + "@" + formatTime() + " - " + message;
+        String logEntry = logEntryPriority + "@" + formatTime() + " - " + message + "\n";
         try {
             getInstance().FILE_WRITER.write(logEntry);
         } catch (IOException e) {
@@ -68,6 +67,7 @@ public class LiveLog {
         if (!isActive()) return;
         try {
             getInstance().FILE_WRITER.close();
+            instance = null;
         } catch (IOException e) {
             //nothing to do here
         }
