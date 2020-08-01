@@ -2,9 +2,8 @@ package main;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -90,6 +89,10 @@ public class LogHub {
 
     public static String formatTime() {
         return new SimpleDateFormat("HH:mm:ss.SSS").format(new Date(System.currentTimeMillis()));
+    }
+
+    public static Path getDirectoryPath() {
+        return Paths.get(LOG_DIRECTORY);
     }
     //todo - other logging functions
 }
