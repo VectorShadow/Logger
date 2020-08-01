@@ -11,14 +11,17 @@ import static main.LogHub.*;
 public class LiveLog {
 
     public enum LogEntryPriority {
-        INFO,
-        ALERT,
-        WARNING,
-        ERROR,
-        FATAL_ERROR
+        INFO, //trivial but potentially useful operation data
+        ALERT, //important operation data
+        DEBUG, //debug specific data
+        WARNING, //indicates a gamestate or occurrence which might potentially indicate a problem
+        ERROR, //indicates a gamestate or occurrence which indicates a problem
+        FATAL_ERROR //indicates a gamestate or occurrence which is fatal to continued operation
     }
 
     private static LogEntryPriority consoleOutLevel = LogEntryPriority.ALERT;
+
+    private static LogEntryPriority logOutLevel = LogEntryPriority.INFO;
 
     private FileWriter FILE_WRITER = null;
 
@@ -50,10 +53,12 @@ public class LiveLog {
 
     public static void log(String message, LogEntryPriority logEntryPriority) {
         String logEntry = logEntryPriority + "@" + formatTime() + " - " + message + "\n";
-        try {
-            getInstance().FILE_WRITER.write(logEntry);
-        } catch (IOException e) {
-            //nothing to do here
+        if (logEntryPriority.compareTo(logOutLevel) >= 0) {
+            try {
+                getInstance().FILE_WRITER.write(logEntry);
+            } catch (IOException e) {
+                //nothing to do here
+            }
         }
         if (logEntryPriority.compareTo(consoleOutLevel) >= 0)
             System.out.println(logEntry);
@@ -61,6 +66,10 @@ public class LiveLog {
     
     public static void setConsoleOutLevel(LogEntryPriority ep) {
         consoleOutLevel = ep;
+    }
+
+    public static void setLogOutLevel(LogEntryPriority ep) {
+        logOutLevel = ep;
     }
 
     public static void stop() {
