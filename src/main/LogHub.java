@@ -27,6 +27,7 @@ public class LogHub {
         String crashDump =
                 "[Fatal Crash Report]"
                 + "\nCrash message: " + adminMessage
+                + "\nException class: " + exception.getClass()
                 + "\nException message: " + exception.getMessage()
                 + "\nStack trace: " + stringifyStackTrace(exception);
         if (LiveLog.isActive()) {
@@ -52,6 +53,7 @@ public class LogHub {
         String errorDump =
                 "[Non-Fatal Error Report]"
                         + "\nError message: " + adminMessage
+                        + "\nException class: " + exception.getClass()
                         + "\nException message: " + exception.getMessage()
                         + "\nStack trace: " + stringifyStackTrace(exception);
         if (LiveLog.isActive()) {
