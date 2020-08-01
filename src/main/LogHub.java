@@ -12,11 +12,12 @@ import java.util.Date;
  * LogHub provides a utility for recording runtime data and writing to external log files.
  */
 public class LogHub {
-    static final String LOG_DIRECTORY = "./logs";
-    static final String PATH_CRASH = "CrashReport";
+    private static final String LOG_DIRECTORY = "./logs";
+    private static final String PATH_CRASH = "CrashReport";
+    private static final String PATH_ERROR = "ErrorReport";
     static final String PATH_LIVE_LOG = "LiveLog";
     //todo - other logpaths?
-    public static final String TXT = "txt";
+    static final String TXT = "txt";
 
     /**
      * Log an exception as a fatal crash, generate a timestamped report, and terminate the program.
@@ -41,6 +42,30 @@ public class LogHub {
             }
         }
         System.exit(-1);
+    }
+
+    /**
+     * Log an exception as a non-fatal error, generate and log a timestamped report.
+     * @param adminMessage a message provided by the caller to provide context specific information
+     * @param exception the exception which caused the call
+     */
+    public static void logNonFatalError(String adminMessage, Exception exception) {
+        String errorDump =
+                "[Non-Fatal Error Report]"
+                        + "\nError message: " + adminMessage
+                        + "\nException message: " + exception.getMessage()
+                        + "\nStack trace: " + stringifyStackTrace(exception);
+        if (LiveLog.isActive()) {
+            LiveLog.log(errorDump, LiveLog.LogEntryPriority.ERROR);
+        } else {
+            try {
+                FileWriter fileWriter = new FileWriter(getTimeStampedPath(PATH_ERROR, TXT));
+                fileWriter.write(errorDump);
+                fileWriter.close();
+            } catch (IOException ioe) {
+                //nothing to do here
+            }
+        }
     }
 
     private static String stringifyStackTrace(Exception exception) {
