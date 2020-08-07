@@ -38,9 +38,11 @@ public class LogHub {
                 fileWriter.write(crashDump);
                 fileWriter.close();
             } catch (IOException ioe) {
+                System.out.println("Fatal crash - failed to write crash dump(" + ioe.getMessage() + ")!");
                 System.exit(-2);
             }
         }
+        System.out.println("Fatal crash - report logged.");
         System.exit(-1);
     }
 
